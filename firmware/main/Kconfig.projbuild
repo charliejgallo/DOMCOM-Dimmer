@@ -1,0 +1,99 @@
+menu "DOMCOM Dimmer"
+
+    menu "Hardware"
+        config DIMMER_PWM_GPIO
+            int "PWM output GPIO (MOSFET gate)"
+            default 18
+            range 0 30
+
+        config DIMMER_PWM_INVERTED
+            bool "Invert the PWM output"
+            default n
+            help
+                For drivers where a high level turns the strip off.
+
+        config DIMMER_PWM_FREQ_HZ
+            int "PWM frequency (Hz)"
+            default 19500
+            range 100 40000
+            help
+                Above the audible band: at 4 kHz the strip (its ceramic
+                capacitors) and the supply hum at mid brightness. The
+                resolution follows from 80 MHz / frequency (12 bits at
+                19.5 kHz), plus 4 dithered bits from the LEDC. With the gate
+                driven straight from the GPIO through a resistor the edges are
+                slow, so short pulses do not turn the MOSFET on; see
+                DIMMER_MIN_DUTY_X10000.
+
+        config DIMMER_BUTTON_GPIO
+            int "External button GPIO (-1 = none)"
+            default 19
+            range -1 30
+
+        config DIMMER_BUTTON_ACTIVE_LOW
+            bool "Button to GND (internal pull-up)"
+            default y
+
+        config DIMMER_BOOT_BUTTON_GPIO
+            int "Board BOOT button GPIO (-1 = do not use it)"
+            default 9
+            range -1 30
+            help
+                Behaves like the external button (press, hold to dim) and,
+                held for DIMMER_RESET_HOLD_S, leaves the Zigbee network.
+    endmenu
+
+    menu "Curve and transitions"
+        config DIMMER_GAMMA_X10
+            int "Gamma x10 (28 = 2.8, same as ESPHome)"
+            default 28
+            range 10 40
+
+        config DIMMER_MIN_DUTY_X10000
+            int "Output at level 1, in units of 0.01 % (500 = 5.00 %)"
+            default 500
+            range 0 2500
+            help
+                Duty at which the strip just lights up, so that level 1 is
+                already visible. Hardware dependent: on the legacy board (gate
+                through a resistor, 19.5 kHz) there is no light below ~5 %.
+                Adjustable over Zigbee (cluster 0xFC00, attribute 0x0000)
+                without reflashing.
+
+        config DIMMER_ONOFF_FADE_DS
+            int "Default on/off fade (tenths of a second)"
+            default 4
+            range 0 100
+            help
+                Initial value of the OnOffTransitionTime attribute; it can be
+                changed over Zigbee afterwards.
+
+        config DIMMER_LEVEL_SMOOTH_MS
+            int "Smoothing between level steps (ms)"
+            default 150
+            range 0 1000
+
+        config DIMMER_HOLD_RAMP_MS
+            int "Full ramp time while holding a button (ms)"
+            default 4000
+            range 1000 20000
+    endmenu
+
+    menu "Factory reset"
+        config DIMMER_RESET_HOLD_S
+            int "Seconds holding BOOT to leave the Zigbee network (0 = never)"
+            default 10
+            range 0 60
+    endmenu
+
+    menu "Zigbee identity"
+        config DIMMER_MANUFACTURER
+            string "Manufacturer (Basic 0x0004)"
+            default "DOMCOM"
+
+        config DIMMER_MODEL
+            string "Model (Basic 0x0005)"
+            default "DOMCOM-Dimmer"
+    endmenu
+
+endmenu
