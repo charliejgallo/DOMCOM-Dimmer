@@ -54,8 +54,10 @@ as configuration entities, which Home Assistant shows under the device's
 Written for Zigbee2MQTT 2.x and checked against zigbee-herdsman-converters
 26.90.0 (the version in Zigbee2MQTT 2.13).
 
-After flashing a new firmware, *Reconfigure* also makes Zigbee2MQTT read the
-firmware version again.
+After flashing a new firmware, Zigbee2MQTT keeps showing the version it
+read when the device was paired: it reads the Basic cluster only during the
+interview. Use *Interview* on the device page (the cyan "i" button) to read
+it again. It does not unpair the device.
 
 ## Behaviour
 
@@ -63,9 +65,10 @@ firmware version again.
   backing off up to 30 s. Use *Permit join* on the coordinator. The strip
   blinks twice when it joins.
 - **On/off** uses the fade in `OnOffTransitionTime` (default 0.4 s).
-- **Brightness:** level changes are smoothed over 150 ms. Every level the
-  stack delivers is logged with a timestamp, to check how transitions are
-  delivered (open question, see the [roadmap](ROADMAP.md)).
+- **Brightness:** transitions (`transition` in Zigbee2MQTT, the transition
+  time of Move to Level) are run by the Zigbee stack, which steps
+  `CurrentLevel` over the requested time; the firmware smooths each step over
+  150 ms. Checked on the board: a 5 s transition fades smoothly.
 - **Power-on behaviour** (`StartUpOnOff`): off, on, toggle or previous
   (default). `StartUpCurrentLevel`: minimum, previous (default) or a fixed
   level. Both are stored in flash; the state is saved 3 s after the last

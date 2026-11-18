@@ -4,7 +4,9 @@
 
 - Zigbee2MQTT external converter (`extras/z2m/domcom_dimmer.js`): device
   description, and the minimum output, gamma and button ramp time as
-  configuration entities in Home Assistant. Firmware unchanged.
+  configuration entities in Home Assistant. Firmware unchanged. Installed
+  and working on Zigbee2MQTT.
+- Checked: level transitions are run by the Zigbee stack and fade smoothly.
 
 ## 0.2.1 — 2026-11-17
 
