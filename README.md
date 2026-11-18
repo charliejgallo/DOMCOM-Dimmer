@@ -28,7 +28,9 @@ YAML is kept, without secrets, in [`legacy/`](legacy/dimmer-taller.yaml).
 - **Effects** from the Identify cluster: blink, breathe, okay, channel
   change, finish and stop.
 - **Settings over Zigbee** (custom cluster 0xFC00): minimum output, gamma
-  and button ramp time, kept in flash.
+  and button ramp time, kept in flash. An external converter for
+  Zigbee2MQTT ([`extras/z2m`](extras/z2m/domcom_dimmer.js)) shows them in
+  Home Assistant.
 - Only the board's **BOOT button** (held 10 s) leaves the network; the
   external button never does, so dimming with a long press is always safe.
 
@@ -49,6 +51,8 @@ YAML is kept, without secrets, in [`legacy/`](legacy/dimmer-taller.yaml).
    folder (updates keep the pairing) and a merged factory image (erases the
    settings and the Zigbee network).
 3. In Zigbee2MQTT, *Permit join*. The strip blinks twice when it joins.
+4. Optional: install the [external converter](docs/ZIGBEE.md#installing-the-converter)
+   to get the settings in Home Assistant.
 
 ## Documentation
 

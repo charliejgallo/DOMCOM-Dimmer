@@ -26,12 +26,36 @@
 
 ## Zigbee2MQTT
 
-There is no external converter yet. Zigbee2MQTT generates a definition from
-the clusters ("Generated support") and exposes: state, brightness,
-*power-on behaviour*, identify, effects and link quality.
+Without anything extra, Zigbee2MQTT generates a definition from the
+clusters ("Generated support") and exposes state, brightness, *power-on
+behaviour*, identify, effects and link quality.
 
-After flashing a new version, use *Reconfigure* on the device page so that
-Zigbee2MQTT reads the firmware version again.
+The external converter in [`extras/z2m/domcom_dimmer.js`](../extras/z2m/domcom_dimmer.js)
+adds the device description and the [settings](#settings-cluster-0xfc00)
+as configuration entities, which Home Assistant shows under the device's
+*Configuration*:
+
+| Entity | Unit | Range | Attribute |
+|---|---|---|---|
+| `minimum_output` | % | 0–25, step 0.01 | 0xFC00 / 0x0000 |
+| `gamma` | | 1.0–4.0, step 0.1 | 0xFC00 / 0x0001 |
+| `button_ramp_time` | s | 1–20, step 0.1 | 0xFC00 / 0x0002 |
+
+### Installing the converter
+
+1. Copy `extras/z2m/domcom_dimmer.js` into the `external_converters` folder
+   of the Zigbee2MQTT data directory (next to `configuration.yaml`; create
+   the folder if it does not exist).
+2. Restart Zigbee2MQTT. The log lists the converter as loaded.
+3. On the device page, *Reconfigure* (the yellow button). The device does
+   not need to be paired again; *Reconfigure* reads the current settings so
+   that they show up.
+
+Written for Zigbee2MQTT 2.x and checked against zigbee-herdsman-converters
+26.90.0 (the version in Zigbee2MQTT 2.13).
+
+After flashing a new firmware, *Reconfigure* also makes Zigbee2MQTT read the
+firmware version again.
 
 ## Behaviour
 
@@ -85,9 +109,11 @@ Output curve:
 output = min + (1 − min) · ((level − 1) / 253) ^ gamma
 ```
 
-Until there is an external converter, write them from Zigbee2MQTT: device
-page → *Dev console* → endpoint `1`, cluster `64512` (0xFC00), the attribute
-id, the value, *Write*. No manufacturer code is needed.
+With the [external converter](#installing-the-converter) they are regular
+settings in Zigbee2MQTT and Home Assistant. Without it, write them from
+Zigbee2MQTT: device page → *Dev console* → endpoint `1`, cluster `64512`
+(0xFC00), the attribute id, the raw value, *Write*. No manufacturer code is
+needed.
 
 How to pick the minimum: set brightness to 1 (the lowest the slider allows)
 and raise the minimum until the strip just glows. On the legacy board that

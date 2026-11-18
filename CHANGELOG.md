@@ -1,6 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Zigbee2MQTT external converter (`extras/z2m/domcom_dimmer.js`): device
+  description, and the minimum output, gamma and button ramp time as
+  configuration entities in Home Assistant. Firmware unchanged.
+
 ## 0.2.1 — 2026-11-17
+
+Tested on the legacy board with Zigbee2MQTT on 2026-11-18.
 
 - The external button never resets the device: a long press only dims.
   Only the board's BOOT button, held 10 s, leaves the network.

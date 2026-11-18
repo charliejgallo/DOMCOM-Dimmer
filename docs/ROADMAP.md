@@ -19,15 +19,15 @@ Done:
 - Identify effects (v0.2.0).
 - Settings cluster 0xFC00: minimum, gamma, ramp (v0.2.0).
 - Minimum output at 5 % for the legacy board (v0.2.0).
-- Only BOOT leaves the network, no power-cycle reset (v0.2.1).
+- Only BOOT leaves the network, no power-cycle reset (v0.2.1, tested).
+- External converter for Zigbee2MQTT with the settings as entities.
 
 To do:
 
 - Check how the stack delivers level transitions (one jump or many steps):
   the log timestamps every level. This decides whether the firmware should
   run transitions itself.
-- External converter for Zigbee2MQTT: settings as proper entities, the
-  right name and picture.
+- Try the external converter on the real Zigbee2MQTT.
 - Check Home Assistant ZHA; a quirk if it needs one.
 - Zigbee OTA (the second app slot is already in the partition table).
 - Scenes: store and recall on/off and level.
