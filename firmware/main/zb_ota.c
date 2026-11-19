@@ -4,9 +4,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "esp_app_desc.h"
+#include "esp_delta_ota.h"
 #include "esp_log.h"
 #include "esp_ota_ops.h"
+#include "esp_partition.h"
 #include "esp_timer.h"
+#include "esp_zigbee_version.h"
 #include "sdkconfig.h"
 #include "zb_dimmer.h"
 
@@ -16,28 +19,55 @@ static const char *TAG = "ota";
 #define OTA_MAX_DATA_SIZE      223      /* bytes per Image Block */
 #define OTA_HW_VERSION         1
 #define ELEMENT_HEADER_LEN     6        /* tag id (2) + length (4) */
+
+/* Element tags. 0x0000 is the standard "upgrade image"; 0xF000 is in the
+ * manufacturer-specific range and carries an esp_delta_ota patch. */
 #define TAG_UPGRADE_IMAGE      0x0000
+#define TAG_DELTA_PATCH        0xF000
+
+/* esp_delta_ota patch header (esp_delta_ota_patch_gen.py / tools/make_ota.py):
+ * magic (4, LE) + SHA-256 of the base app image (32) + reserved (28). */
+#define DELTA_HEADER_LEN       64
+#define DELTA_MAGIC            0xfccdde10u
+
+typedef enum { MODE_NONE, MODE_FULL, MODE_DELTA } ota_mode_t;
 
 static const esp_partition_t *s_part;
 static esp_ota_handle_t s_handle;
 static bool s_active;
+static ota_mode_t s_mode;
+static esp_delta_ota_handle_t s_delta;
 
-/* The element header can in theory arrive split across blocks, so it is
- * collected byte by byte before the image data starts. */
+/* The element and patch headers can in theory arrive split across blocks, so
+ * they are collected byte by byte before the payload starts. */
 static uint8_t s_elem_hdr[ELEMENT_HEADER_LEN];
 static uint8_t s_elem_hdr_len;
+static uint8_t s_delta_hdr[DELTA_HEADER_LEN];
+static uint8_t s_delta_hdr_len;
 static uint32_t s_elem_len;
-static uint32_t s_written;
+static uint32_t s_consumed;     /* element bytes consumed (after its header) */
 static uint32_t s_received;
 static int64_t s_t0;
 static int s_last_pct;
 
+/* ---------- version ---------- */
+
+/* ZCL file version layout: application release, application build, stack
+ * release, stack build (one byte each, high to low). Zigbee2MQTT shows each
+ * release byte as two nibbles, so PROJECT_VER a.b.c becomes release (a,b),
+ * build c, and the stack bytes are esp-zigbee-lib's version: 0.4.0 with
+ * 1.6.8 reads "App 0.4 build 0 | Stack 1.6 build 8". tools/make_ota.py
+ * computes the same value. a and b must stay below 16. */
 uint32_t zb_ota_running_version(void)
 {
     unsigned a = 0, b = 0, c = 0;
     sscanf(esp_app_get_description()->version, "%u.%u.%u", &a, &b, &c);
-    return ((uint32_t)(a & 0xFF) << 16) | ((uint32_t)(b & 0xFF) << 8) | (c & 0xFF);
+    uint32_t app_release = ((a & 0xF) << 4) | (b & 0xF);
+    uint32_t stack_release = ((ESP_ZB_VER_MAJOR & 0xF) << 4) | (ESP_ZB_VER_MINOR & 0xF);
+    return (app_release << 24) | ((c & 0xFF) << 16) | (stack_release << 8) | (ESP_ZB_VER_PATCH & 0xFF);
 }
+
+/* ---------- cluster ---------- */
 
 void zb_ota_add_cluster(esp_zb_cluster_list_t *cl)
 {
@@ -66,12 +96,20 @@ void zb_ota_add_cluster(esp_zb_cluster_list_t *cl)
              zb_ota_running_version());
 }
 
+/* ---------- download state ---------- */
+
 static void reset_state(void)
 {
+    if (s_delta) {
+        esp_delta_ota_deinit(s_delta);
+        s_delta = NULL;
+    }
     s_active = false;
+    s_mode = MODE_NONE;
     s_elem_hdr_len = 0;
+    s_delta_hdr_len = 0;
     s_elem_len = 0;
-    s_written = 0;
+    s_consumed = 0;
     s_received = 0;
     s_last_pct = -1;
 }
@@ -85,36 +123,117 @@ static void abort_update(const char *why)
     reset_state();
 }
 
-/* Strips the element header and writes the image bytes. */
+/* ---------- delta patch ---------- */
+
+/* Source for the patch: the running app, read straight from its partition. */
+static esp_err_t delta_read(uint8_t *buf, size_t size, int src_offset, void *user)
+{
+    return esp_partition_read((const esp_partition_t *)user, src_offset, buf, size);
+}
+
+/* Output of the patch: the new app, into the inactive slot. */
+static esp_err_t delta_write(const uint8_t *buf, size_t size, void *user)
+{
+    return esp_ota_write(s_handle, buf, size);
+}
+
+/* Checks the patch header against the running image and prepares the patcher. */
+static esp_err_t delta_start(void)
+{
+    uint32_t magic = s_delta_hdr[0] | (s_delta_hdr[1] << 8) | (s_delta_hdr[2] << 16) |
+                     ((uint32_t)s_delta_hdr[3] << 24);
+    if (magic != DELTA_MAGIC) {
+        ESP_LOGE(TAG, "not a delta patch (magic 0x%08" PRIx32 ")", magic);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* The patch only rebuilds the new firmware from the exact image it was
+     * made against: refuse it before writing anything if this is not it. */
+    const esp_partition_t *running = esp_ota_get_running_partition();
+    uint8_t sha[32];
+    esp_err_t err = esp_partition_get_sha256(running, sha);
+    if (err != ESP_OK) {
+        return err;
+    }
+    if (memcmp(sha, s_delta_hdr + 4, sizeof(sha)) != 0) {
+        ESP_LOGE(TAG, "patch made for a different base firmware");
+        return ESP_ERR_INVALID_VERSION;
+    }
+
+    esp_delta_ota_cfg_t cfg = {
+        .user_data = (void *)running,
+        .read_cb_with_user_data = delta_read,
+        .write_cb_with_user_data = delta_write,
+    };
+    s_delta = esp_delta_ota_init(&cfg);
+    if (!s_delta) {
+        return ESP_ERR_NO_MEM;
+    }
+    ESP_LOGI(TAG, "delta patch for the running firmware, applying");
+    return ESP_OK;
+}
+
+/* ---------- element data ---------- */
+
+static esp_err_t element_header_done(void)
+{
+    uint16_t tag = s_elem_hdr[0] | (s_elem_hdr[1] << 8);
+    s_elem_len = s_elem_hdr[2] | (s_elem_hdr[3] << 8) | (s_elem_hdr[4] << 16) |
+                 ((uint32_t)s_elem_hdr[5] << 24);
+    switch (tag) {
+    case TAG_UPGRADE_IMAGE:
+        s_mode = MODE_FULL;
+        ESP_LOGI(TAG, "full image: %" PRIu32 " bytes", s_elem_len);
+        return ESP_OK;
+    case TAG_DELTA_PATCH:
+        s_mode = MODE_DELTA;
+        ESP_LOGI(TAG, "delta patch: %" PRIu32 " bytes", s_elem_len);
+        return s_elem_len > DELTA_HEADER_LEN ? ESP_OK : ESP_ERR_INVALID_SIZE;
+    default:
+        ESP_LOGE(TAG, "unsupported element tag 0x%04x", tag);
+        return ESP_ERR_INVALID_ARG;
+    }
+}
+
+/* Strips the element (and patch) header and passes the payload on. */
 static esp_err_t write_block(const uint8_t *p, uint16_t len)
 {
+    esp_err_t err;
+
     while (len && s_elem_hdr_len < ELEMENT_HEADER_LEN) {
         s_elem_hdr[s_elem_hdr_len++] = *p++;
         len--;
-        if (s_elem_hdr_len == ELEMENT_HEADER_LEN) {
-            uint16_t tag = s_elem_hdr[0] | (s_elem_hdr[1] << 8);
-            s_elem_len = s_elem_hdr[2] | (s_elem_hdr[3] << 8) | (s_elem_hdr[4] << 16) |
-                         ((uint32_t)s_elem_hdr[5] << 24);
-            if (tag != TAG_UPGRADE_IMAGE) {
-                ESP_LOGE(TAG, "unsupported element tag 0x%04x", tag);
-                return ESP_ERR_INVALID_ARG;
-            }
-            ESP_LOGI(TAG, "image element: %" PRIu32 " bytes", s_elem_len);
+        if (s_elem_hdr_len == ELEMENT_HEADER_LEN && (err = element_header_done()) != ESP_OK) {
+            return err;
         }
     }
     if (!len) {
         return ESP_OK;
     }
-    if (s_written + len > s_elem_len) {
+    if (s_consumed + len > s_elem_len) {
         ESP_LOGE(TAG, "more data than the element declares");
         return ESP_ERR_INVALID_SIZE;
     }
-    esp_err_t err = esp_ota_write(s_handle, p, len);
-    if (err == ESP_OK) {
-        s_written += len;
+    s_consumed += len;
+
+    if (s_mode == MODE_FULL) {
+        return esp_ota_write(s_handle, p, len);
     }
-    return err;
+
+    while (len && s_delta_hdr_len < DELTA_HEADER_LEN) {
+        s_delta_hdr[s_delta_hdr_len++] = *p++;
+        len--;
+        if (s_delta_hdr_len == DELTA_HEADER_LEN && (err = delta_start()) != ESP_OK) {
+            return err;
+        }
+    }
+    if (!len) {
+        return ESP_OK;
+    }
+    return esp_delta_ota_feed_patch(s_delta, p, len);
 }
+
+/* ---------- stack callbacks ---------- */
 
 esp_err_t zb_ota_on_value(const esp_zb_zcl_ota_upgrade_value_message_t *m)
 {
@@ -167,12 +286,22 @@ esp_err_t zb_ota_on_value(const esp_zb_zcl_ota_upgrade_value_message_t *m)
         break;
 
     case ESP_ZB_ZCL_OTA_UPGRADE_STATUS_CHECK:
-        if (!s_active || s_elem_hdr_len < ELEMENT_HEADER_LEN || s_written != s_elem_len) {
-            ESP_LOGE(TAG, "check failed: %" PRIu32 " of %" PRIu32 " bytes written", s_written, s_elem_len);
+        if (!s_active || s_mode == MODE_NONE || s_consumed != s_elem_len) {
+            ESP_LOGE(TAG, "check failed: %" PRIu32 " of %" PRIu32 " bytes", s_consumed, s_elem_len);
             abort_update("incomplete image");
             return ESP_FAIL;
         }
-        /* esp_ota_end() verifies the app image (header, segments, SHA-256). */
+        if (s_mode == MODE_DELTA) {
+            err = esp_delta_ota_finalize(s_delta);
+            esp_delta_ota_deinit(s_delta);
+            s_delta = NULL;
+            if (err != ESP_OK) {
+                abort_update("patch could not be completed");
+                return err;
+            }
+        }
+        /* esp_ota_end() verifies the app image (header, segments, SHA-256),
+         * whether it came whole or rebuilt from a patch. */
         err = esp_ota_end(s_handle);
         s_active = false;
         if (err != ESP_OK) {
@@ -180,7 +309,8 @@ esp_err_t zb_ota_on_value(const esp_zb_zcl_ota_upgrade_value_message_t *m)
             reset_state();
             return err;
         }
-        ESP_LOGI(TAG, "image verified, %" PRIu32 " bytes in %lld s", s_written,
+        ESP_LOGI(TAG, "image verified (%s, %" PRIu32 " bytes received) in %lld s",
+                 s_mode == MODE_DELTA ? "delta" : "full", s_received,
                  (long long)((esp_timer_get_time() - s_t0) / 1000000));
         break;
 

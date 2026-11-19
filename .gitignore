@@ -4,3 +4,5 @@ firmware/sdkconfig
 firmware/sdkconfig.old
 .DS_Store
 dist/
+.venv/
+archive/

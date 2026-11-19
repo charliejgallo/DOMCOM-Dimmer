@@ -89,7 +89,7 @@ they are written once; after that the flash value wins.
 | `button.c` | one task per button: debounce, click, hold ramp, reset on BOOT |
 | `settings.c` | NVS storage, power-up rules, delayed state save |
 | `zb_dimmer.c` | Zigbee: data model, signals, attribute and effect callbacks |
-| `zb_ota.c` | Zigbee OTA client: writes the inactive slot, verifies, boots it, confirms it |
+| `zb_ota.c` | Zigbee OTA client: full images and delta patches into the inactive slot, verifies, boots, confirms |
 
 Notes:
 

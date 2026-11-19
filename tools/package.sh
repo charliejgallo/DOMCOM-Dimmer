@@ -17,5 +17,7 @@ cp $B/flasher_args.json $B/ota_data_initial.bin $B/domcom_dimmer.bin $D/
 cp $B/bootloader/bootloader.bin $D/bootloader/
 cp $B/partition_table/partition-table.bin $D/partition_table/
 (cd $B && python -m esptool --chip esp32c6 merge_bin -o "$ROOT/dist/domcom-dimmer-esp32c6-v$VER@0x0.bin" @flash_args >/dev/null)
-python3 $ROOT/tools/make_ota.py
+PY=python3
+[ -x $ROOT/.venv/bin/python ] && PY=$ROOT/.venv/bin/python    # has detools (tools/requirements.txt)
+$PY $ROOT/tools/make_ota.py
 ls -l $ROOT/dist $D | awk 'NF>5{print $5, $9}'

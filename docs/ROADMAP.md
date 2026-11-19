@@ -26,29 +26,23 @@ Done:
   smoothly; nothing to add in the firmware.
 - Zigbee OTA with rollback (v0.3.0): 0.3.0 → 0.3.1 over the air on the
   board, about an hour with Zigbee2MQTT's 50-byte blocks.
+- Delta OTA (v0.4.0): patches of 1–6 % of the image, checked against the
+  running firmware; readable version numbers. To be tried on the board
+  (0.4.0 by cable, 0.4.1 as a 10.8 KB patch).
 
 To do:
 
-- **Delta OTA** (high priority for the user): send only the difference
-  from the installed version instead of the whole ~650 KB app. Espressif's
-  Zigbee SDK supports it (`CONFIG_ZB_DELTA_OTA`, built on ESP-IDF's
-  `esp_delta_ota` with a patch made by `esp_delta_ota_patch_gen`); a small
-  change should become tens of KB and an update of a couple of minutes
-  instead of ~1 hour. To work out: the patch needs the exact base image,
-  so the index must offer the right patch for the installed version (or a
-  full image as fallback), and rollback must keep working.
 - OTA block size: Zigbee2MQTT sends 50-byte blocks by default (about 1 hour
   for 650 KB). Find the largest size that works without fragmentation
   (*Show update settings* in the OTA dialog) and document it.
-- Version encoding: `PROJECT_VER` lands in the low bytes of the file
-  version, so Zigbee2MQTT shows it as "Stack 0.3". Use the ZCL layout
-  (application release and build in the high bytes) so it reads
-  "App 0.3 build 1"; the new numbers are higher than the old ones, so
-  updates keep working.
-
 - Check Home Assistant ZHA; a quirk if it needs one.
 - Scenes: store and recall on/off and level.
-- Button events as Zigbee actions, so automations can use them.
+
+Not planned for now:
+
+- Button events as Zigbee actions. Holding the button to dim would also
+  fire "long press" events, and someone who does not know about them could
+  trigger automations while just dimming the light.
 
 ## When the repository goes public: updates from releases
 

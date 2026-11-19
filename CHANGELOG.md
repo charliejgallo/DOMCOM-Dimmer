@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.1 — 2026-11-18
+
+- No functional change: the first image meant to arrive as a delta patch
+  (10.8 KB from 0.4.0, instead of the 678 KB full image).
+
+## 0.4.0 — 2026-11-18
+
+- **Delta OTA:** an OTA file can carry an esp_delta_ota patch (element tag
+  0xF000) instead of the whole app. The device checks that the patch was
+  made from its running firmware before writing anything, rebuilds the new
+  app from it into the other slot and verifies it like a full image.
+- `tools/make_ota.py` archives every packaged version in `archive/`, makes
+  patches from the archived versions (0.4.0 on), checks each by applying
+  it, and lists them in the index before the full image; `--base-url` for
+  web hosting. Needs `detools` (`tools/requirements.txt`).
+- File version in the ZCL layout: Zigbee2MQTT shows "App 0.4 build 0 |
+  Stack 1.6 build 8" instead of "Stack 0.3". Higher than every 0.3.x
+  number, so updates from 0.3.x still work.
+
 ## 0.3.1 — 2026-11-18
 
 - Each level step from the stack is logged at debug level only (a 5 s
