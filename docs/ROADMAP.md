@@ -50,6 +50,39 @@ To do:
 - Scenes: store and recall on/off and level.
 - Button events as Zigbee actions, so automations can use them.
 
+## When the repository goes public: updates from releases
+
+Today the `.ota` and its index are copied by hand into the Zigbee2MQTT data
+folder. With a public repository, each GitHub release can serve them:
+
+1. **CI builds the release.** A GitHub Actions workflow on every `v*` tag:
+   builds the firmware in the `espressif/idf` container, runs
+   `tools/package.sh` and attaches to the release the `.ota`, `index.json`,
+   the build folder (zip) and the factory image. No more building on the
+   Mac for a release.
+2. **A stable index URL.** `index.json` is a release asset with absolute
+   URLs to the `.ota` of that same release. Every user points Zigbee2MQTT
+   once at
+   `https://github.com/charliejgallo/DOMCOM-Dimmer/releases/latest/download/index.json`
+   (`ota: zigbee_ota_override_index_location`, which accepts URLs); each
+   new release then shows up as an available update by itself, with no
+   files to copy. `make_ota.py` needs an option for absolute URLs; the
+   index already carries every field a web-hosted image needs (size,
+   SHA-512, manufacturer, image type, version, model).
+3. **ZHA too.** zigpy (ZHA) can read a Zigbee2MQTT-format index as an extra
+   OTA provider, so the same URL should serve Home Assistant users without
+   Zigbee2MQTT. To be checked.
+4. **Fully official, later.** Submitting the converter to
+   zigbee-herdsman-converters makes the device supported out of the box,
+   and submitting images to Koenkk/zigbee-OTA puts them in the official
+   index: updates with no configuration at all. Each image needs a pull
+   request there, so it fits stable versions, not every build. The license
+   allows that redistribution (non-commercial); keep the `modelId` in the
+   index entries, since manufacturer code 0x131B is Espressif's, shared.
+
+Delta OTA fits on top: the release would carry a patch from the previous
+version plus the full image as fallback.
+
 ## Phase 3: Wi-Fi (to decide)
 
 Goal: the same hardware usable over Wi-Fi with Home Assistant, ideally
