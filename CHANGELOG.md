@@ -4,7 +4,9 @@
 
 - No functional change: the first release to reach a device through the
   public index URL (`releases/latest/download/index.json`) with nothing
-  copied by hand, and the first patch between two CI builds.
+  copied by hand, and the first patch between two CI builds (10.8 KB).
+  Installed that way on the board on 2026-11-19: Zigbee2MQTT downloaded
+  the patch from the public release, about a minute, no re-pairing.
 
 ## 0.5.0 — 2026-11-19
 

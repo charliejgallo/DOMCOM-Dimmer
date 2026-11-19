@@ -80,8 +80,13 @@ installing one.
   board, running that 0.4.1, updated to 0.5.0 with it through Zigbee2MQTT
   (the release's OTA folder copied in, since the repository was still
   private).
-- Still to check once public: Zigbee2MQTT following
-  `releases/latest/download/index.json` by itself.
+- v0.5.1 (2026-11-19), with the repository public: Zigbee2MQTT read
+  `releases/latest/download/index.json`, picked the 10.8 KB patch from
+  0.5.0 and downloaded it from the release; the board updated to 0.5.1 in
+  about a minute. Nothing was copied by hand. Patches between two CI builds
+  are as small as between two local builds.
+- Still to see: the device's own daily query turning up a new release
+  without opening the OTA dialog.
 
 ## Base releases built before the workflow
 

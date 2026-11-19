@@ -198,7 +198,9 @@ that override, marking the update as available.
   an hour with the default 50-byte blocks, the light working all along; the
   device restarted into 0.3.1 without re-pairing.
 - On the board, from a release (2026-11-19): 0.4.1 → 0.5.0 with the 31 KB
-  patch published by the release workflow ([RELEASES.md](RELEASES.md)).
+  patch published by the release workflow ([RELEASES.md](RELEASES.md)),
+  then 0.5.0 → 0.5.1 with a 10.8 KB patch that Zigbee2MQTT downloaded
+  straight from the public release URL.
 - On the board, delta (2026-11-18): 0.4.0 flashed by cable, then **0.4.0 →
   0.4.1 as a 10.8 KB patch** from Zigbee2MQTT. Zigbee2MQTT picked the patch
   from the index by itself; the download took about a minute (from 55 % to

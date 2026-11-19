@@ -45,15 +45,11 @@ Not planned for now:
   fire "long press" events, and someone who does not know about them could
   trigger automations while just dimming the light.
 
-## When the repository goes public: updates from releases
+## Updates from releases (public repository)
 
-Suggested moment: once the release workflow below works (delta OTA is
-already tested on the board), so that the first public version can be
-installed and updated without building anything. ZHA is simulated only:
-the README asks ZHA users to report through issues.
-
-Items 1 and 2 are done ([RELEASES.md](RELEASES.md)); they need the
-repository to be public for the URL to work without a login.
+Items 1 and 2 are done and working: the repository is public since
+2026-11-19 and the board updated from the release URL
+([RELEASES.md](RELEASES.md)).
 
 1. **CI builds the release.** A GitHub Actions workflow on every `v*` tag:
    builds the firmware in the `espressif/idf` container, runs
