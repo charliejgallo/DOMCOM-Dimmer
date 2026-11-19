@@ -7,6 +7,8 @@
   configuration entities in Home Assistant. Firmware unchanged. Installed
   and working on Zigbee2MQTT.
 - Checked: level transitions are run by the Zigbee stack and fade smoothly.
+- Checked: *Interview* in Zigbee2MQTT refreshes the firmware version shown
+  (0.1.0 → 0.2.1); *Reconfigure* does not.
 
 ## 0.2.1 — 2026-11-17
 

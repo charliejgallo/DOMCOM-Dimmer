@@ -57,7 +57,8 @@ Written for Zigbee2MQTT 2.x and checked against zigbee-herdsman-converters
 After flashing a new firmware, Zigbee2MQTT keeps showing the version it
 read when the device was paired: it reads the Basic cluster only during the
 interview. Use *Interview* on the device page (the cyan "i" button) to read
-it again. It does not unpair the device.
+it again. It does not unpair the device. Checked: after *Interview* the
+device page went from 0.1.0 to 0.2.1.
 
 ## Behaviour
 
