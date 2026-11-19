@@ -30,18 +30,19 @@ Done:
   running firmware; readable version numbers. Tested on the board:
   0.4.0 → 0.4.1 as a 10.8 KB patch in about a minute.
 
-To do:
+Phase 2 is complete.
 
-- OTA block size: Zigbee2MQTT sends 50-byte blocks by default (about 1 hour
-  for 650 KB). Find the largest size that works without fragmentation
-  (*Show update settings* in the OTA dialog) and document it.
-- ZHA on a real installation (simulated only); a quirk to expose the
-  settings cluster there.
-- Scenes: store and recall on/off and level.
+Optional, not planned for now (contributions welcome):
 
-Not planned for now:
-
-- Button events as Zigbee actions. Holding the button to dim would also
+- **Larger OTA blocks.** Zigbee2MQTT sends 50-byte blocks by default.
+  Larger blocks would shorten a full-image update, but they load the mesh
+  more; on a busy network (dozens of devices) a slower update is the better
+  trade, and delta patches already take about a minute.
+- **ZHA on a real installation**, and a ZHA quirk to expose the settings
+  cluster. ZHA is simulated only; ZHA users are asked to test and report
+  through issues.
+- **Zigbee scenes** (store and recall on/off and level).
+- **Button events as Zigbee actions.** Holding the button to dim would also
   fire "long press" events, and someone who does not know about them could
   trigger automations while just dimming the light.
 
