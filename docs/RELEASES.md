@@ -73,6 +73,16 @@ So devices in use should run release binaries: flash
 `domcom-dimmer-esp32c6-<ver>.zip` from a release, not a local build, when
 installing one.
 
+## Checked
+
+- v0.5.0 (2026-11-19), the first release published by the workflow: built
+  in CI, it found v0.4.1 as base and made a 31 KB patch against it; the
+  board, running that 0.4.1, updated to 0.5.0 with it through Zigbee2MQTT
+  (the release's OTA folder copied in, since the repository was still
+  private).
+- Still to check once public: Zigbee2MQTT following
+  `releases/latest/download/index.json` by itself.
+
 ## Base releases built before the workflow
 
 v0.4.1 was built on a computer before this workflow existed. Its release
