@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1 — 2026-11-19
+
+- No functional change: the first release to reach a device through the
+  public index URL (`releases/latest/download/index.json`) with nothing
+  copied by hand, and the first patch between two CI builds.
+
 ## 0.5.0 — 2026-11-19
 
 First release built and published by the release workflow. No firmware
