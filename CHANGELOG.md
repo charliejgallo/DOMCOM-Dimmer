@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 — 2026-11-19
+
+First release built and published by the release workflow. No firmware
+change from 0.4.1: devices on 0.4.1 get it as a small delta patch.
 
 - ZHA: simulated with ZHA's and zigpy's own code (light entity; OTA index
   read by zigpy's `z2m_local` provider). The index entries carry `path` for
