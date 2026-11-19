@@ -46,6 +46,11 @@ Not planned for now:
 
 ## When the repository goes public: updates from releases
 
+Suggested moment: once delta OTA has been tried on the board and the
+release workflow below works, so that the first public version can be
+installed and updated without building anything. ZHA should be checked by
+then too.
+
 Today the `.ota` and its index are copied by hand into the Zigbee2MQTT data
 folder. With a public repository, each GitHub release can serve them:
 

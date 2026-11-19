@@ -1,72 +1,95 @@
 # DOMCOM Dimmer
 
-Zigbee dimmer for single-colour LED strips (12/24 V, low-side MOSFET) on an
-ESP32-C6. It works with Zigbee2MQTT and Home Assistant, keeps working
-without a network, and has a local push button.
+Zigbee dimmer for single-colour LED strips (12/24 V DC, low-side MOSFET) on
+an ESP32-C6. It works with Zigbee2MQTT and Home Assistant, keeps working
+without a network, has a local push button, and updates itself over Zigbee
+with patches of a few kilobytes.
 
-It replaces an ESPHome dimmer on a Wemos D1 mini (ESP8266, Wi-Fi). The old
-YAML is kept, without secrets, in [`legacy/`](legacy/dimmer-taller.yaml).
+<p align="center">
+  <img src="docs/images/legacy-board-d1mini.jpg" width="300" alt="The board the project started from: a hand-made dimmer with a D1 mini, a buck converter, a TO-220 MOSFET and screw terminals">
+</p>
 
-> **Status:** work in progress. The firmware runs on the legacy board
-> (hand-wired with jumper cables) and pairs with Zigbee2MQTT. A dedicated PCB
-> comes later; see the [roadmap](docs/ROADMAP.md).
+It started as the replacement for an ESPHome dimmer on a Wemos D1 mini
+(ESP8266, Wi-Fi); that YAML is kept, without secrets, in
+[`legacy/`](legacy/dimmer-taller.yaml).
+
+## Status
+
+Work in progress, running on the original hand-made board with an ESP32-C6
+wired in. A dedicated PCB comes later ([roadmap](docs/ROADMAP.md)).
+
+| | |
+|---|---|
+| Zigbee2MQTT 2.13 | tested: pairing, light, settings, effects, power-on behaviour, OTA |
+| Full OTA with rollback | tested on the board (0.3.0 → 0.3.1) |
+| Delta OTA | built and checked on the computer; first test on the board pending |
+| Home Assistant ZHA | not tested yet (a standard Dimmable Light, so it should pair) |
+| Hardware | the legacy board only; no PCB files yet |
 
 ## Features
 
 - **Zigbee 3.0 router** (it strengthens the mesh), standard *Dimmable Light*
-  (device 0x0101). Zigbee2MQTT picks it up with a generated definition:
-  on/off, brightness, power-on behaviour, identify and effects.
+  (device 0x0101): on/off, brightness, transitions, power-on behaviour.
 - **Silent PWM:** 19.5 kHz, above the audible band, with ~16 effective bits
   (12 bits plus 4 dithered by the C6 LEDC).
 - **Brightness curve:** gamma 2.8 (as ESPHome) with an adjustable floor, so
-  level 1 already lights the strip.
-- **Local button**, same feel as the ESPHome original: press to toggle,
-  hold to dim (the direction alternates on every hold).
+  the lowest brightness already lights the strip.
+- **Local button:** press to toggle, hold to dim (the direction alternates
+  on every hold). A long press never does anything else.
 - **Works offline:** the button and the power-up state never depend on the
   network. The state is saved to flash and restored according to
   *power-on behaviour*.
-- **Effects** from the Identify cluster: blink, breathe, okay, channel
-  change, finish and stop.
-- **Settings over Zigbee** (custom cluster 0xFC00): minimum output, gamma
-  and button ramp time, kept in flash. An external converter for
-  Zigbee2MQTT ([`extras/z2m`](extras/z2m/domcom_dimmer.js)) shows them in
-  Home Assistant.
-- **Firmware updates over Zigbee** from Zigbee2MQTT, as delta patches of
-  a few KB when possible, with automatic rollback if a new version does
-  not start ([docs/OTA.md](docs/OTA.md)).
-- Only the board's **BOOT button** (held 10 s) leaves the network; the
-  external button never does, so dimming with a long press is always safe.
+- **Identify and effects:** blink, breathe, okay, channel change.
+- **Settings over Zigbee:** minimum output, gamma and button ramp time,
+  kept in flash; with the [external converter](extras/z2m/domcom_dimmer.js)
+  they are regular settings in Zigbee2MQTT and Home Assistant.
+- **Firmware updates over Zigbee:** a delta patch when the device runs a
+  known version (typically 1–6 % of the image: a minute instead of an
+  hour), the full image otherwise; checked before and after writing, with
+  automatic rollback if a new version does not start
+  ([docs/OTA.md](docs/OTA.md)).
+- **Leaving the network** only by holding the board's BOOT button for
+  10 s, or by removing the device from the coordinator.
 
-## Quick start
+## Getting started
 
-1. Wire the ESP32-C6 as in [docs/HARDWARE.md](docs/HARDWARE.md#test-wiring):
-   GPIO18 to the MOSFET gate, GPIO19 to the button, GND, 5 V.
-2. Build and flash ([docs/FIRMWARE.md](docs/FIRMWARE.md)):
+You need an ESP32-C6 board (Super Mini, DevKitC, C6-Zero…), a logic-level
+N-MOSFET driving the strip's negative wire, a 5 V supply for the board,
+and optionally a push button to GND.
+
+1. **Wire it** as in [docs/HARDWARE.md](docs/HARDWARE.md#test-wiring):
+   GPIO18 to the MOSFET gate (through a resistor, with a pull-down),
+   GPIO19 to the button, GND and 5 V. Pins are configurable.
+2. **Build and flash** with ESP-IDF 5.5 ([docs/FIRMWARE.md](docs/FIRMWARE.md)):
 
    ```bash
    cd firmware
-   source ~/esp/esp-idf/export.sh
    idf.py build
-   idf.py -p /dev/cu.usbmodemXXXX flash monitor
+   idf.py -p PORT flash
    ```
 
-   `tools/package.sh` builds `dist/` for other flashers: an ESP-IDF build
-   folder (updates keep the pairing) and a merged factory image (erases the
-   settings and the Zigbee network).
-3. In Zigbee2MQTT, *Permit join*. The strip blinks twice when it joins.
-4. Optional: install the [external converter](docs/ZIGBEE.md#installing-the-converter)
-   to get the settings in Home Assistant.
+3. **Pair it:** *Permit join* in Zigbee2MQTT. The strip blinks twice when
+   it joins.
+4. **Install the external converter** for the settings and OTA
+   ([docs/ZIGBEE.md](docs/ZIGBEE.md#installing-the-converter)).
+5. **Updates** from then on go over the air ([docs/OTA.md](docs/OTA.md)).
 
 ## Documentation
 
 | Document | Contents |
 |---|---|
-| [docs/HARDWARE.md](docs/HARDWARE.md) | Legacy board, test wiring, pin choices, what was measured (hum, MOSFET, minimum) |
-| [docs/ZIGBEE.md](docs/ZIGBEE.md) | Endpoint and clusters, behaviour, effects, custom settings cluster, leaving the network |
+| [docs/HARDWARE.md](docs/HARDWARE.md) | The board, test wiring, pin choices, what was measured (hum, MOSFET, minimum) |
+| [docs/ZIGBEE.md](docs/ZIGBEE.md) | Clusters, behaviour, effects, settings cluster, Zigbee2MQTT converter, leaving the network |
 | [docs/FIRMWARE.md](docs/FIRMWARE.md) | Build, flash, configuration, code layout, flash storage |
-| [docs/OTA.md](docs/OTA.md) | Firmware updates over Zigbee: images, Zigbee2MQTT setup, rollback |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Phases: Zigbee base, product polish, Wi-Fi, new PCB |
+| [docs/OTA.md](docs/OTA.md) | Updates over Zigbee: full images, delta patches, Zigbee2MQTT setup, rollback |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | What is done and what comes next |
 | [CHANGELOG.md](CHANGELOG.md) | Changes per version |
+
+## Safety
+
+This is a low-voltage DC device: the strip and the board run from a 12 or
+24 V supply. Do not connect anything here to mains. Size the MOSFET, the
+wiring and the supply for the strip's current, and fuse the supply.
 
 ## License
 
@@ -74,5 +97,6 @@ YAML is kept, without secrets, in [`legacy/`](legacy/dimmer-taller.yaml).
 including personal projects, study and research. Commercial use needs a
 separate license from the author.
 
-The firmware links Espressif's esp-zigbee-lib and esp-zboss-lib, which have
-their own licenses.
+Third-party code, each under its own license: Espressif's esp-zigbee-lib
+and esp-zboss-lib, esp_delta_ota (Apache-2.0) with detools (BSD-2-Clause)
+and heatshrink (ISC).
