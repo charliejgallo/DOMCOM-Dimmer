@@ -166,9 +166,17 @@ Zigbee2MQTT sends 50-byte blocks by default. A full image (~680 KB) takes
 about **an hour**, a patch **about a minute** (both measured on the board,
 one hop from the coordinator). The light works normally meanwhile.
 
-In the OTA dialog the index path has to be typed again every time it opens
-(`domcom-dimmer/index.json` in *Custom index*), or pick the official index
-as source: the override index from `configuration.yaml` is added to it.
+The OTA dialog (the cloud button) offers only *Custom index* and *Custom
+firmware* for a device without official OTA support, like this one: there
+is no "default" source there. Type the index in *Custom index* —
+`domcom-dimmer/index.json` for the local folder, or the release URL
+(`https://github.com/charliejgallo/DOMCOM-Dimmer/releases/latest/download/index.json`).
+Once an update has been found, Zigbee2MQTT fills it in by itself.
+
+The `zigbee_ota_override_index_location` line in `configuration.yaml`
+serves the checks that do not go through the dialog: the device asks for
+an image once a day, and Zigbee2MQTT answers from its default index plus
+that override, marking the update as available.
 
 ## Checked
 
