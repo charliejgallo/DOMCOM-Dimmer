@@ -159,8 +159,8 @@ the end the device restarts (the light returns to its state with the usual
 fade) and Zigbee2MQTT shows the new version.
 
 Zigbee2MQTT sends 50-byte blocks by default. A full image (~680 KB) takes
-about **an hour** (measured on the board, one hop from the coordinator); a
-patch, a minute or a few. The light works normally meanwhile.
+about **an hour**, a patch **about a minute** (both measured on the board,
+one hop from the coordinator). The light works normally meanwhile.
 
 In the OTA dialog the index path has to be typed again every time it opens
 (`domcom-dimmer/index.json` in *Custom index*), or pick the official index
@@ -185,4 +185,8 @@ as source: the override index from `configuration.yaml` is added to it.
   over the air** (full image) from Zigbee2MQTT with the local index: about
   an hour with the default 50-byte blocks, the light working all along; the
   device restarted into 0.3.1 without re-pairing.
-- On the board, delta: pending (0.4.0 by cable, then 0.4.1 as a patch).
+- On the board, delta (2026-11-18): 0.4.0 flashed by cable, then **0.4.0 →
+  0.4.1 as a 10.8 KB patch** from Zigbee2MQTT. Zigbee2MQTT picked the patch
+  from the index by itself; the download took about a minute (from 55 % to
+  100 % in 8 s) instead of an hour, the device restarted into 0.4.1 without
+  re-pairing, and Zigbee2MQTT shows "App: 0.4 build 1 | Stack: 1.6 build 8".

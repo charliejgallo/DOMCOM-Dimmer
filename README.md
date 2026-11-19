@@ -23,7 +23,7 @@ wired in. A dedicated PCB comes later ([roadmap](docs/ROADMAP.md)).
 |---|---|
 | Zigbee2MQTT 2.13 | tested: pairing, light, settings, effects, power-on behaviour, OTA |
 | Full OTA with rollback | tested on the board (0.3.0 → 0.3.1) |
-| Delta OTA | built and checked on the computer; first test on the board pending |
+| Delta OTA | tested on the board (0.4.0 → 0.4.1: a 10.8 KB patch, about a minute) |
 | Home Assistant ZHA | **not tested on a real ZHA**; simulated with ZHA's and zigpy's own code (light entity, OTA index) — see [docs/ZIGBEE.md](docs/ZIGBEE.md#home-assistant-zha) |
 | Hardware | the legacy board only; no PCB files yet |
 

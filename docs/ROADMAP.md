@@ -27,8 +27,8 @@ Done:
 - Zigbee OTA with rollback (v0.3.0): 0.3.0 → 0.3.1 over the air on the
   board, about an hour with Zigbee2MQTT's 50-byte blocks.
 - Delta OTA (v0.4.0): patches of 1–6 % of the image, checked against the
-  running firmware; readable version numbers. To be tried on the board
-  (0.4.0 by cable, 0.4.1 as a 10.8 KB patch).
+  running firmware; readable version numbers. Tested on the board:
+  0.4.0 → 0.4.1 as a 10.8 KB patch in about a minute.
 
 To do:
 
@@ -47,8 +47,8 @@ Not planned for now:
 
 ## When the repository goes public: updates from releases
 
-Suggested moment: once delta OTA has been tried on the board and the
-release workflow below works, so that the first public version can be
+Suggested moment: once the release workflow below works (delta OTA is
+already tested on the board), so that the first public version can be
 installed and updated without building anything. ZHA is simulated only:
 the README asks ZHA users to report through issues.
 

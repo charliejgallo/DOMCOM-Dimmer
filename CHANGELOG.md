@@ -10,7 +10,8 @@
 ## 0.4.1 — 2026-11-18
 
 - No functional change: the first image meant to arrive as a delta patch
-  (10.8 KB from 0.4.0, instead of the 678 KB full image).
+  (10.8 KB from 0.4.0, instead of the 678 KB full image). Installed that
+  way on the board on 2026-11-18: about a minute, no re-pairing.
 
 ## 0.4.0 — 2026-11-18
 
