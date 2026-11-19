@@ -191,6 +191,9 @@ def main() -> None:
         (args.out / name).write_bytes(data)
         entries.append({
             "url": prefix + name,
+            # zigpy's z2m_local provider (ZHA) reads "path", relative to the
+            # index file; Zigbee2MQTT reads "url" and ignores "path".
+            "path": name,
             "fileVersion": fver,
             "fileSize": len(data),
             "manufacturerCode": manuf,

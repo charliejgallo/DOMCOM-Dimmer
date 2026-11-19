@@ -20,8 +20,13 @@ On the D1 mini the PWM was on GPIO14 (D5) and the button on GPIO13 (D7).
 
 ## Test wiring
 
-During development the ESP32-C6 is wired to the D1 mini socket with jumper
-cables:
+During development the ESP32-C6 (a Super Mini) is wired to the D1 mini
+socket with jumper cables:
+
+<p align="center">
+  <img src="images/test-setup-c6-wiring.jpg" width="320" alt="ESP32-C6 Super Mini held by a helping hand, jumper cables to the D1 mini socket of the original board">
+  <img src="images/test-setup-c6-strip.jpg" width="420" alt="The same setup driving a lit COB LED strip">
+</p>
 
 | D1 mini socket | Function on the board | ESP32-C6 |
 |---|---|---|

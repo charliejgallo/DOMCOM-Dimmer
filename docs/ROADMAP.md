@@ -35,7 +35,8 @@ To do:
 - OTA block size: Zigbee2MQTT sends 50-byte blocks by default (about 1 hour
   for 650 KB). Find the largest size that works without fragmentation
   (*Show update settings* in the OTA dialog) and document it.
-- Check Home Assistant ZHA; a quirk if it needs one.
+- ZHA on a real installation (simulated only); a quirk to expose the
+  settings cluster there.
 - Scenes: store and recall on/off and level.
 
 Not planned for now:
@@ -48,8 +49,8 @@ Not planned for now:
 
 Suggested moment: once delta OTA has been tried on the board and the
 release workflow below works, so that the first public version can be
-installed and updated without building anything. ZHA should be checked by
-then too.
+installed and updated without building anything. ZHA is simulated only:
+the README asks ZHA users to report through issues.
 
 Today the `.ota` and its index are copied by hand into the Zigbee2MQTT data
 folder. With a public repository, each GitHub release can serve them:
@@ -68,9 +69,9 @@ folder. With a public repository, each GitHub release can serve them:
    files to copy. `make_ota.py` needs an option for absolute URLs; the
    index already carries every field a web-hosted image needs (size,
    SHA-512, manufacturer, image type, version, model).
-3. **ZHA too.** zigpy (ZHA) can read a Zigbee2MQTT-format index as an extra
-   OTA provider, so the same URL should serve Home Assistant users without
-   Zigbee2MQTT. To be checked.
+3. **ZHA too.** zigpy (ZHA) reads Zigbee2MQTT-format indexes: `z2m_local`
+   for a file (documented in OTA.md, checked with zigpy's code) and `z2m`
+   for a URL, so the same release index can serve ZHA users.
 4. **Fully official, later.** Submitting the converter to
    zigbee-herdsman-converters makes the device supported out of the box,
    and submitting images to Koenkk/zigbee-OTA puts them in the official

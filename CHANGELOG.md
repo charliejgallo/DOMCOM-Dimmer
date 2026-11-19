@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- ZHA: simulated with ZHA's and zigpy's own code (light entity; OTA index
+  read by zigpy's `z2m_local` provider). The index entries carry `path` for
+  zigpy besides `url` for Zigbee2MQTT. Not tested on a real ZHA yet.
+- Photos of the ESP32-C6 test setup in the README and docs/HARDWARE.md.
+
 ## 0.4.1 — 2026-11-18
 
 - No functional change: the first image meant to arrive as a delta patch

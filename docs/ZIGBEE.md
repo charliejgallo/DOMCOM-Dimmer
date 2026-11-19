@@ -63,6 +63,28 @@ interview. Use *Interview* on the device page (the cyan "i" button) to read
 it again. It does not unpair the device. Checked: after *Interview* the
 device page went from 0.1.0 to 0.2.1.
 
+## Home Assistant (ZHA)
+
+**Not tested on a real ZHA installation** (the author uses Zigbee2MQTT). It
+was simulated with ZHA's own code (zha 2.4.3, zigpy 2.4.1): its entity
+discovery, run on an endpoint shaped like the dimmer's, picks the **light**
+entity, plus an identify button, firmware update, power-on behaviour
+(select), start-up level and transition times (numbers). Some of those
+numbers (on level, on/off transition times, default move rate) map to
+attributes the firmware does not implement; ZHA normally hides them after
+reading them as unsupported.
+
+What ZHA does not get: the [settings cluster](#settings-cluster-0xfc00)
+(minimum output, gamma, ramp). That needs a ZHA quirk, which does not exist
+yet; the defaults work, and the values can still be set with Zigbee2MQTT
+before moving the device, or with ZHA's *Manage Zigbee device* (cluster
+0xFC00, attributes 0–2).
+
+OTA from ZHA: see [OTA.md](OTA.md#home-assistant-zha).
+
+If you use it with ZHA, please report how it went in an
+[issue](https://github.com/charliejgallo/DOMCOM-Dimmer/issues).
+
 ## Behaviour
 
 - **Pairing:** a device with no network searches on its own, with retries

@@ -6,12 +6,13 @@ without a network, has a local push button, and updates itself over Zigbee
 with patches of a few kilobytes.
 
 <p align="center">
-  <img src="docs/images/legacy-board-d1mini.jpg" width="300" alt="The board the project started from: a hand-made dimmer with a D1 mini, a buck converter, a TO-220 MOSFET and screw terminals">
+  <img src="docs/images/test-setup-c6-strip.jpg" width="560" alt="Test setup: an ESP32-C6 Super Mini wired with jumper cables to the original dimmer board, driving a lit LED strip">
 </p>
 
 It started as the replacement for an ESPHome dimmer on a Wemos D1 mini
-(ESP8266, Wi-Fi); that YAML is kept, without secrets, in
-[`legacy/`](legacy/dimmer-taller.yaml).
+(ESP8266, Wi-Fi). The ESP32-C6 now runs on that same hand-made board,
+wired into the D1 mini's socket ([docs/HARDWARE.md](docs/HARDWARE.md)); the
+old YAML is kept, without secrets, in [`legacy/`](legacy/dimmer-taller.yaml).
 
 ## Status
 
@@ -23,7 +24,7 @@ wired in. A dedicated PCB comes later ([roadmap](docs/ROADMAP.md)).
 | Zigbee2MQTT 2.13 | tested: pairing, light, settings, effects, power-on behaviour, OTA |
 | Full OTA with rollback | tested on the board (0.3.0 → 0.3.1) |
 | Delta OTA | built and checked on the computer; first test on the board pending |
-| Home Assistant ZHA | not tested yet (a standard Dimmable Light, so it should pair) |
+| Home Assistant ZHA | **not tested on a real ZHA**; simulated with ZHA's and zigpy's own code (light entity, OTA index) — see [docs/ZIGBEE.md](docs/ZIGBEE.md#home-assistant-zha) |
 | Hardware | the legacy board only; no PCB files yet |
 
 ## Features
@@ -68,11 +69,14 @@ and optionally a push button to GND.
    idf.py -p PORT flash
    ```
 
-3. **Pair it:** *Permit join* in Zigbee2MQTT. The strip blinks twice when
-   it joins.
-4. **Install the external converter** for the settings and OTA
-   ([docs/ZIGBEE.md](docs/ZIGBEE.md#installing-the-converter)).
+3. **Pair it:** *Permit join* in Zigbee2MQTT (or ZHA). The strip blinks
+   twice when it joins.
+4. **Zigbee2MQTT:** install the external converter for the settings and
+   OTA ([docs/ZIGBEE.md](docs/ZIGBEE.md#installing-the-converter)).
 5. **Updates** from then on go over the air ([docs/OTA.md](docs/OTA.md)).
+
+If you try it with ZHA, or anything does not work for you, please open an
+[issue](https://github.com/charliejgallo/DOMCOM-Dimmer/issues).
 
 ## Documentation
 

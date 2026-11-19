@@ -128,6 +128,29 @@ For each new version, replace the folder's contents with the new
 `dist/ota/domcom-dimmer`. No restart is needed: Zigbee2MQTT reads the index
 on every check.
 
+## Home Assistant (ZHA)
+
+ZHA's OTA (zigpy) can read the same folder through its `z2m_local`
+provider. In Home Assistant's `configuration.yaml`, with the
+`domcom-dimmer` folder copied into the Home Assistant config directory:
+
+```yaml
+zha:
+  zigpy_config:
+    ota:
+      extra_providers:
+        - type: z2m_local
+          index_file: /config/domcom-dimmer/index.json
+```
+
+Restart Home Assistant; the dimmer's firmware update entity then offers new
+versions. **Not tried on a real ZHA**: checked with zigpy 2.4.1's own code
+(the configuration is accepted, the index validates against its schema,
+both files parse, and its selection gives the patch to a device on 0.4.0,
+the full image to one on 0.3.1 and nothing to one on 0.4.1). Each index
+entry carries `path` (relative to the index, read by zigpy) besides `url`
+(relative to the Zigbee2MQTT data folder, read by Zigbee2MQTT).
+
 ## Updating
 
 Zigbee2MQTT → **OTA** page (or the device page's OTA section) → *Check for
@@ -155,6 +178,7 @@ as source: the override index from `configuration.yaml` is added to it.
   40 KB, 5.9 %. Every patch is checked by applying it on the computer.
 - The SHA-256 the patch header carries is the one esptool reports as the
   image's validation hash, which is what the device compares.
+- The same index and files with zigpy 2.4.1 (ZHA), as above.
 - No image in the public Zigbee2MQTT index uses manufacturer code 0x131B,
   so no other product's image can be offered to the dimmer.
 - On the board (2026-11-18): v0.3.0 flashed by cable, then **0.3.0 → 0.3.1
