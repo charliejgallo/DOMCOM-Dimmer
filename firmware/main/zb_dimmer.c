@@ -107,9 +107,9 @@ static esp_err_t on_set_attr(const esp_zb_zcl_set_attr_value_message_t *m)
     } else if (cl == ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL) {
         if (id == ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID) {
             uint8_t new_level = *(const uint8_t *)v;
-            /* Logged with a timestamp to see whether the stack runs a
-             * transition in steps (many calls) or jumps to the final value. */
-            ESP_LOGI(TAG, "[%lu] level = %u", (unsigned long)esp_log_timestamp(), new_level);
+            /* The stack runs transitions by stepping CurrentLevel, so this
+             * fires many times per transition: debug level only. */
+            ESP_LOGD(TAG, "level = %u", new_level);
             light_set(on, new_level, CONFIG_DIMMER_LEVEL_SMOOTH_MS);
         } else if (id == ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_START_UP_CURRENT_LEVEL_ID) {
             settings_set_startup_level(*(const uint8_t *)v);

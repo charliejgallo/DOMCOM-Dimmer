@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 — 2026-11-18
+
+- Each level step from the stack is logged at debug level only (a 5 s
+  transition used to print ~50 lines). First version meant to be installed
+  over the air, to try OTA on the board.
+
 ## 0.3.0 — 2026-11-18
 
 - Firmware updates over Zigbee (OTA Upgrade client, manufacturer 0x131B,
