@@ -26,6 +26,7 @@ wired in. A dedicated PCB comes later ([roadmap](docs/ROADMAP.md)).
 | Delta OTA | tested on the board (0.4.0 → 0.4.1: a 10.8 KB patch, about a minute) |
 | Releases | built and published by GitHub Actions; Zigbee2MQTT updates from the public release URL (0.5.0 → 0.5.1 tested on the board) |
 | Home Assistant ZHA | **not tested on a real ZHA**; simulated with ZHA's and zigpy's own code (light entity, OTA index) — see [docs/ZIGBEE.md](docs/ZIGBEE.md#home-assistant-zha) |
+| Wi-Fi firmware (ESPHome) | compiles with ESPHome 2026.11; not tried on the board yet |
 | Hardware | the legacy board only; no PCB files yet |
 
 ## Features
@@ -52,6 +53,9 @@ wired in. A dedicated PCB comes later ([roadmap](docs/ROADMAP.md)).
   ([docs/OTA.md](docs/OTA.md)).
 - **Leaving the network** only by holding the board's BOOT button for
   10 s, or by removing the device from the coordinator.
+- **Or Wi-Fi instead of Zigbee:** an ESPHome firmware for the same board,
+  with the same behaviour, for Home Assistant without a Zigbee coordinator
+  ([docs/WIFI.md](docs/WIFI.md)).
 
 ## Getting started
 
@@ -93,6 +97,7 @@ If you try it with ZHA, or anything does not work for you, please open an
 | [docs/ZIGBEE.md](docs/ZIGBEE.md) | Clusters, behaviour, effects, settings cluster, Zigbee2MQTT converter, leaving the network |
 | [docs/FIRMWARE.md](docs/FIRMWARE.md) | Build, flash, configuration, code layout, flash storage |
 | [docs/OTA.md](docs/OTA.md) | Updates over Zigbee: full images, delta patches, Zigbee2MQTT setup, rollback |
+| [docs/WIFI.md](docs/WIFI.md) | The Wi-Fi firmware (ESPHome): installing, differences, switching modes |
 | [docs/RELEASES.md](docs/RELEASES.md) | How releases are built and published, what they contain |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | What is done and what comes next |
 | [CHANGELOG.md](CHANGELOG.md) | Changes per version |

@@ -4,7 +4,7 @@
 |---|---|---|
 | 1 | Zigbee base firmware (ESP-IDF + esp-zigbee-sdk), tested on the legacy board with jumper wires | **done** (v0.1.1) |
 | 2 | Product polish | **in progress** |
-| 3 | Wi-Fi mode (ESPHome), Zigbee/Wi-Fi selection | to decide |
+| 3 | Wi-Fi firmware (ESPHome) for the same board | **in progress** |
 | 4 | New PCB | planned |
 
 ## Phase 1: done
@@ -80,16 +80,19 @@ Items 1 and 2 are done and working: the repository is public since
 Delta OTA fits on top: the release would carry a patch from the previous
 version plus the full image as fallback.
 
-## Phase 3: Wi-Fi (to decide)
+## Phase 3: Wi-Fi
 
-Goal: the same hardware usable over Wi-Fi with Home Assistant, ideally
-through ESPHome. Options:
+**In progress.** A second firmware for the same hardware, built with
+ESPHome ([WIFI.md](WIFI.md)): same pins and behaviour, for Home Assistant
+over Wi-Fi. The mode is the firmware that is flashed; there is no mode
+jumper, because two firmwares cannot share the two app slots and keep their
+OTA updates.
 
-- An ESPHome firmware for the C6 (a port of the legacy YAML), flashed
-  instead of the Zigbee one.
-- A jumper read at boot to choose the mode. The two stacks cannot share the
-  2.4 GHz radio comfortably, so it is one mode or the other.
-- If ESPHome adds Zigbee lights, a single ESPHome YAML for both modes.
+- Done: `esphome/domcom-dimmer.yaml` (validated and compiled with ESPHome
+  2026.11).
+- To do: try it on the board; possibly build it in the release workflow so
+  releases carry its factory image too.
+- If ESPHome adds Zigbee lights: revisit a single YAML for both modes.
 
 ## Phase 4: new PCB
 
@@ -97,4 +100,4 @@ through ESPHome. Options:
 - HW-613 buck converter instead of the Mini360.
 - Logic-level MOSFET with a gate driver.
 - BOOT button reachable; external button terminal.
-- Mode jumper if phase 3 needs it.
+- No mode jumper: the mode is the firmware (see phase 3).

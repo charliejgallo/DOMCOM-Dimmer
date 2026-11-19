@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Wi-Fi firmware: `esphome/domcom-dimmer.yaml` (ESPHome 2026.11, ESP32-C6,
+  esp-idf) with the same pins and behaviour as the Zigbee firmware: 19.5 kHz
+  PWM with LEDC dithering, gamma 2.8 and a 5 % floor adjustable from Home
+  Assistant, press to toggle and hold to dim on both buttons, BOOT held 10 s
+  for a factory reset, encrypted API and OTA. See docs/WIFI.md.
+
 ## 0.5.1 — 2026-11-19
 
 - No functional change: the first release to reach a device through the

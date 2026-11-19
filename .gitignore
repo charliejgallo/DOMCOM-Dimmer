@@ -6,3 +6,5 @@ firmware/sdkconfig.old
 dist/
 .venv/
 archive/
+esphome/secrets.yaml
+esphome/.esphome/
