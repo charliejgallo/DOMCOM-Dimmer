@@ -1,0 +1,100 @@
+# Builds the firmware and publishes a GitHub release with everything needed
+# to install and update it: OTA files and index (full image + delta patches
+# from earlier releases), the build folder for flashing by cable, the
+# factory image, and the app binary that later releases patch from.
+#
+# - Push a tag vX.Y.Z (matching PROJECT_VER) to publish a release; a tag with
+#   a suffix (v1.2.0-rc1) publishes a pre-release, which is never used as a
+#   patch base nor served by .../releases/latest.
+# - Run it by hand (Actions > Release > Run workflow) for a dry run: same
+#   build and files, uploaded as a workflow artifact, nothing published.
+#
+# See docs/RELEASES.md.
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: espressif/idf:v5.5.5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        shell: bash
+        run: |
+          . "$IDF_PATH/export.sh"
+          cd firmware
+          idf.py build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          retention-days: 7
+          path: |
+            firmware/sdkconfig
+            firmware/build/domcom_dimmer.bin
+            firmware/build/bootloader/bootloader.bin
+            firmware/build/partition_table/partition-table.bin
+            firmware/build/ota_data_initial.bin
+            firmware/build/flasher_args.json
+            firmware/build/flash_args
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: firmware
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Tools
+        run: pip install -r tools/requirements.txt
+
+      - name: Patch bases from earlier releases
+        run: tools/fetch_bases.sh 5
+
+      - name: Release files
+        id: files
+        run: |
+          ver=$(sed -n 's/.*PROJECT_VER "\(.*\)".*/\1/p' firmware/CMakeLists.txt)
+          if [ "${GITHUB_REF_TYPE}" = tag ]; then tag=${GITHUB_REF_NAME}; else tag=v$ver; fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          tools/release_assets.sh "$tag" "$GITHUB_REPOSITORY"
+
+      - name: Publish
+        if: github.ref_type == 'tag'
+        run: |
+          tag=${{ steps.files.outputs.tag }}
+          pre=
+          case "$tag" in *-*) pre=--prerelease ;; esac
+          gh release create "$tag" dist/release/* \
+            --title "DOMCOM Dimmer ${tag#v}" \
+            --notes-file dist/release-notes.md $pre
+
+      - name: Dry run output
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-dry-run
+          retention-days: 7
+          path: |
+            dist/release
+            dist/release-notes.md

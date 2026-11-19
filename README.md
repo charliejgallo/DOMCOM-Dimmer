@@ -86,6 +86,7 @@ If you try it with ZHA, or anything does not work for you, please open an
 | [docs/ZIGBEE.md](docs/ZIGBEE.md) | Clusters, behaviour, effects, settings cluster, Zigbee2MQTT converter, leaving the network |
 | [docs/FIRMWARE.md](docs/FIRMWARE.md) | Build, flash, configuration, code layout, flash storage |
 | [docs/OTA.md](docs/OTA.md) | Updates over Zigbee: full images, delta patches, Zigbee2MQTT setup, rollback |
+| [docs/RELEASES.md](docs/RELEASES.md) | How releases are built and published, what they contain |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | What is done and what comes next |
 | [CHANGELOG.md](CHANGELOG.md) | Changes per version |
 

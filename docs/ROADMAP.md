@@ -52,8 +52,8 @@ already tested on the board), so that the first public version can be
 installed and updated without building anything. ZHA is simulated only:
 the README asks ZHA users to report through issues.
 
-Today the `.ota` and its index are copied by hand into the Zigbee2MQTT data
-folder. With a public repository, each GitHub release can serve them:
+Items 1 and 2 are done ([RELEASES.md](RELEASES.md)); they need the
+repository to be public for the URL to work without a login.
 
 1. **CI builds the release.** A GitHub Actions workflow on every `v*` tag:
    builds the firmware in the `espressif/idf` container, runs

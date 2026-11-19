@@ -6,6 +6,13 @@
   read by zigpy's `z2m_local` provider). The index entries carry `path` for
   zigpy besides `url` for Zigbee2MQTT. Not tested on a real ZHA yet.
 - Photos of the ESP32-C6 test setup in the README and docs/HARDWARE.md.
+- Release workflow (`.github/workflows/release.yml`): a `v*` tag builds the
+  firmware in the ESP-IDF container and publishes a release with the OTA
+  index and files (patches from the last five releases), the build folder,
+  the factory image and the patch base; a manual run is a dry run.
+  `tools/fetch_bases.sh` and `tools/release_assets.sh`; `tools/package.sh`
+  now in bash and passes its arguments to `make_ota.py`. See
+  docs/RELEASES.md.
 
 ## 0.4.1 — 2026-11-18
 
