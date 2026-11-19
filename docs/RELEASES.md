@@ -28,7 +28,8 @@ trying a build on a device first. Pre-releases are never patch bases and
 
 **Dry run:** *Actions → Release → Run workflow* builds everything from the
 current branch and leaves it as a workflow artifact (`release-dry-run`),
-without publishing.
+without publishing. Checked on 2026-11-19: build ~4.5 min in the container,
+release files ~25 s, all seven files and the notes produced.
 
 ## What a release contains
 

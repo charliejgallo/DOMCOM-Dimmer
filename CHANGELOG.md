@@ -12,7 +12,8 @@
   the factory image and the patch base; a manual run is a dry run.
   `tools/fetch_bases.sh` and `tools/release_assets.sh`; `tools/package.sh`
   now in bash and passes its arguments to `make_ota.py`. See
-  docs/RELEASES.md.
+  docs/RELEASES.md. Dry runs pass on GitHub; release v0.4.1 published by
+  hand with the binary the first device runs, as the first patch base.
 
 ## 0.4.1 — 2026-11-18
 
