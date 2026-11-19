@@ -5,7 +5,9 @@
 //  (light, brightness, power-on behaviour, effects). The converter adds:
 //    - the device name and description;
 //    - the settings in the custom cluster 0xFC00 as configuration entities
-//      (minimum output, gamma, button ramp time), also in Home Assistant.
+//      (minimum output, gamma, button ramp time), also in Home Assistant;
+//    - firmware updates over Zigbee (OTA), from the images built by
+//      tools/make_ota.py (see docs/OTA.md).
 //
 //  Installation: see docs/ZIGBEE.md. In short, copy this file into the
 //  external_converters folder of your Zigbee2MQTT data directory and restart
@@ -24,6 +26,7 @@ module.exports = {
     model: 'DOMCOM-Dimmer',
     vendor: 'DOMCOM',
     description: 'Zigbee dimmer for single-colour LED strips (ESP32-C6)',
+    ota: true,
     extend: [
         m.deviceAddCustomCluster(CONFIG_CLUSTER, {
             name: CONFIG_CLUSTER,

@@ -24,6 +24,9 @@
 | Level Control (0x0008) | `MinLevel` 1, `MaxLevel` 254, `Options`, `OnOffTransitionTime` (0x0010), `StartUpCurrentLevel` (0x4000) |
 | DOMCOM settings (0xFC00) | see [Settings cluster](#settings-cluster-0xfc00) |
 
+Client cluster: OTA Upgrade (0x0019), manufacturer code 0x131B, image type
+0x4443; see [OTA.md](OTA.md).
+
 ## Zigbee2MQTT
 
 Without anything extra, Zigbee2MQTT generates a definition from the

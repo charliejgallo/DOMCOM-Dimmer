@@ -24,11 +24,11 @@ Done:
   (installed and working).
 - Level transitions: the stack runs them in steps, a 5 s transition fades
   smoothly; nothing to add in the firmware.
+- Zigbee OTA with rollback (v0.3.0); to be tried on the board.
 
 To do:
 
 - Check Home Assistant ZHA; a quirk if it needs one.
-- Zigbee OTA (the second app slot is already in the partition table).
 - Scenes: store and recall on/off and level.
 - Button events as Zigbee actions, so automations can use them.
 

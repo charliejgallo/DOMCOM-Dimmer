@@ -1,7 +1,15 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 — 2026-11-18
 
+- Firmware updates over Zigbee (OTA Upgrade client, manufacturer 0x131B,
+  image type 0x4443): the image goes to the inactive app slot, is verified
+  and booted; the device asks for updates once a day.
+- Rollback: a new firmware is confirmed when the Zigbee stack starts; if it
+  fails before that, the bootloader returns to the previous one. Needs this
+  version's bootloader, so v0.3.0 is flashed by cable once.
+- `tools/make_ota.py` builds the Zigbee OTA file and a Zigbee2MQTT index;
+  `tools/package.sh` runs it. The external converter enables OTA.
 - Zigbee2MQTT external converter (`extras/z2m/domcom_dimmer.js`): device
   description, and the minimum output, gamma and button ramp time as
   configuration entities in Home Assistant. Firmware unchanged. Installed

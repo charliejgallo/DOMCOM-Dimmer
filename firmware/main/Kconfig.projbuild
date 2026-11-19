@@ -94,6 +94,22 @@ menu "DOMCOM Dimmer"
         config DIMMER_MODEL
             string "Model (Basic 0x0005)"
             default "DOMCOM-Dimmer"
+
+        config DIMMER_OTA_MANUFACTURER_CODE
+            hex "OTA manufacturer code"
+            default 0x131B
+            help
+                Manufacturer code in the OTA client and in the OTA files
+                (tools/make_ota.py). 0x131B is Espressif's.
+
+        config DIMMER_OTA_IMAGE_TYPE
+            hex "OTA image type"
+            default 0x4443
+            help
+                Identifies this product's images among all the ones with the
+                same manufacturer code ("DC", DOMCOM). Change it for a
+                different hardware variant, so that no image reaches a board
+                it was not built for.
     endmenu
 
 endmenu

@@ -14,3 +14,6 @@ CONFIG_FREERTOS_HZ=1000
 
 # Console on the C6 native USB (UART0 as well)
 CONFIG_ESP_CONSOLE_SECONDARY_USB_SERIAL_JTAG=y
+
+# Roll back to the previous firmware if a new one (Zigbee OTA) does not start
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y

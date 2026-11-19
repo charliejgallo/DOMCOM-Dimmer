@@ -11,6 +11,7 @@
 #include "light.h"
 #include "sdkconfig.h"
 #include "settings.h"
+#include "zb_ota.h"
 
 static const char *TAG = "zb";
 
@@ -147,6 +148,10 @@ static esp_err_t action_handler(esp_zb_core_action_callback_id_t cb_id, const vo
     switch (cb_id) {
     case ESP_ZB_CORE_SET_ATTR_VALUE_CB_ID:
         return on_set_attr((const esp_zb_zcl_set_attr_value_message_t *)msg);
+    case ESP_ZB_CORE_OTA_UPGRADE_VALUE_CB_ID:
+        return zb_ota_on_value((const esp_zb_zcl_ota_upgrade_value_message_t *)msg);
+    case ESP_ZB_CORE_OTA_UPGRADE_QUERY_IMAGE_RESP_CB_ID:
+        return zb_ota_on_query_resp((const esp_zb_zcl_ota_upgrade_query_image_resp_message_t *)msg);
     case ESP_ZB_CORE_IDENTIFY_EFFECT_CB_ID: {
         const esp_zb_zcl_identify_effect_message_t *m = msg;
         ESP_LOGI(TAG, "effect 0x%02x (variant %u)", m->effect_id, m->effect_variant);
@@ -189,6 +194,8 @@ static void on_joined(void)
     uint8_t level;
     light_get(&on, &level);
     push_state_locked(on, level);
+
+    zb_ota_start_queries();
 }
 
 void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
@@ -210,6 +217,8 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
             esp_zb_scheduler_alarm(commissioning_cb, ESP_ZB_BDB_MODE_INITIALIZATION, 1000);
             break;
         }
+        /* The stack started: a freshly updated firmware is good to keep. */
+        zb_ota_mark_valid();
         if (esp_zb_bdb_is_factory_new()) {
             ESP_LOGI(TAG, "no network: searching to join (permit join on the coordinator)");
             esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_STEERING);
@@ -326,6 +335,8 @@ static esp_zb_cluster_list_t *build_clusters(bool on, uint8_t level)
     esp_zb_custom_cluster_add_custom_attr(cfg, CFG_ATTR_HOLD_RAMP_MS, ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE, &ramp);
     esp_zb_cluster_list_add_custom_cluster(cl, cfg, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+
+    zb_ota_add_cluster(cl);
     return cl;
 }
 

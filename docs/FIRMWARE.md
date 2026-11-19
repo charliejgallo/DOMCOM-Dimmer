@@ -70,6 +70,12 @@ The two are not equivalent:
 | `DIMMER_HOLD_RAMP_MS` | 4000 | also over Zigbee |
 | `DIMMER_RESET_HOLD_S` | 10 | seconds on BOOT to leave the network |
 | `DIMMER_MANUFACTURER` / `DIMMER_MODEL` | `DOMCOM` / `DOMCOM-Dimmer` | Basic cluster |
+| `DIMMER_OTA_MANUFACTURER_CODE` | 0x131B | OTA client and `.ota` files |
+| `DIMMER_OTA_IMAGE_TYPE` | 0x4443 | one per hardware variant |
+
+`sdkconfig.defaults` also enables `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE`
+(see [OTA.md](OTA.md)); it lives in the bootloader, so it takes effect once
+the bootloader is flashed by cable.
 
 Settings that also exist over Zigbee take the `menuconfig` value only until
 they are written once; after that the flash value wins.
@@ -83,6 +89,7 @@ they are written once; after that the flash value wins.
 | `button.c` | one task per button: debounce, click, hold ramp, reset on BOOT |
 | `settings.c` | NVS storage, power-up rules, delayed state save |
 | `zb_dimmer.c` | Zigbee: data model, signals, attribute and effect callbacks |
+| `zb_ota.c` | Zigbee OTA client: writes the inactive slot, verifies, boots it, confirms it |
 
 Notes:
 
@@ -105,8 +112,8 @@ Partitions (4 MB):
 | phy_init | 0x11000 | 4 KB | |
 | zb_storage | 0x12000 | 16 KB | Zigbee network and stack data |
 | zb_fct | 0x16000 | 4 KB | Zigbee factory data |
-| ota_0 | 0x20000 | 1.875 MB | application |
-| ota_1 | 0x200000 | 1.875 MB | reserved for Zigbee OTA |
+| ota_0 | 0x20000 | 1.875 MB | application (flashed here by cable) |
+| ota_1 | 0x200000 | 1.875 MB | application (the slots alternate on each OTA) |
 
 NVS keys (namespace `dimmer`):
 

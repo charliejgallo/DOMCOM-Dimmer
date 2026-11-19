@@ -31,6 +31,8 @@ YAML is kept, without secrets, in [`legacy/`](legacy/dimmer-taller.yaml).
   and button ramp time, kept in flash. An external converter for
   Zigbee2MQTT ([`extras/z2m`](extras/z2m/domcom_dimmer.js)) shows them in
   Home Assistant.
+- **Firmware updates over Zigbee** from Zigbee2MQTT, with automatic
+  rollback if a new version does not start ([docs/OTA.md](docs/OTA.md)).
 - Only the board's **BOOT button** (held 10 s) leaves the network; the
   external button never does, so dimming with a long press is always safe.
 
@@ -61,6 +63,7 @@ YAML is kept, without secrets, in [`legacy/`](legacy/dimmer-taller.yaml).
 | [docs/HARDWARE.md](docs/HARDWARE.md) | Legacy board, test wiring, pin choices, what was measured (hum, MOSFET, minimum) |
 | [docs/ZIGBEE.md](docs/ZIGBEE.md) | Endpoint and clusters, behaviour, effects, custom settings cluster, leaving the network |
 | [docs/FIRMWARE.md](docs/FIRMWARE.md) | Build, flash, configuration, code layout, flash storage |
+| [docs/OTA.md](docs/OTA.md) | Firmware updates over Zigbee: images, Zigbee2MQTT setup, rollback |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Phases: Zigbee base, product polish, Wi-Fi, new PCB |
 | [CHANGELOG.md](CHANGELOG.md) | Changes per version |
 
