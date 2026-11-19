@@ -5,7 +5,7 @@
 | 1 | Zigbee base firmware (ESP-IDF + esp-zigbee-sdk), tested on the legacy board with jumper wires | **done** (v0.1.1) |
 | 2 | Product polish | **in progress** |
 | 3 | Wi-Fi firmware (ESPHome) for the same board | **in progress** |
-| 4 | New PCB | planned |
+| 4 | New PCB | specified, design next |
 
 ## Phase 1: done
 
@@ -96,8 +96,11 @@ OTA updates.
 
 ## Phase 4: new PCB
 
-- ESP32-C6 module.
-- HW-613 buck converter instead of the Mini360.
-- Logic-level MOSFET with a gate driver.
-- BOOT button reachable; external button terminal.
-- No mode jumper: the mode is the firmware (see phase 3).
+Specified in [hardware/SPEC.md](../hardware/SPEC.md): two variants of the
+same board for JLCPCB / PCBWay (through-hole only, and SMD for PCBA), the
+ESP32-C6 Super Mini in a socket, 12/24 V up to 10 A, a gate driver and a
+power MOSFET for fast edges (to lower the 5 % floor), the HW-613 buck,
+channel 1 populated and footprints for a second (CCT) channel, BOOT and
+USB reachable, no mode jumper.
+
+- To do: the KiCad design and fabrication files, then the first boards.
