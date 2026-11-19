@@ -153,6 +153,10 @@ entry carries `path` (relative to the index, read by zigpy) besides `url`
 
 ## Updating
 
+<p align="center">
+  <img src="images/z2m-delta-update.png" width="460" alt="Zigbee2MQTT device state during an update: latest_source is the 0.4.0-to-0.4.1 delta patch, progress 55 %, 24 seconds remaining">
+</p>
+
 Zigbee2MQTT → **OTA** page (or the device page's OTA section) → *Check for
 updates* on the dimmer → *Update*. The progress shows in Zigbee2MQTT. At
 the end the device restarts (the light returns to its state with the usual

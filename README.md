@@ -75,6 +75,12 @@ and optionally a push button to GND.
    OTA ([docs/ZIGBEE.md](docs/ZIGBEE.md#installing-the-converter)).
 5. **Updates** from then on go over the air ([docs/OTA.md](docs/OTA.md)).
 
+<p align="center">
+  <img src="docs/images/z2m-device-0.4.1.png" width="380" alt="Zigbee2MQTT device page: DOMCOM-Dimmer router, external converter loaded, firmware 0.4.1 shown as App 0.4 build 1, Stack 1.6 build 8">
+  <img src="docs/images/z2m-delta-update.png" width="420" alt="Zigbee2MQTT device state during an update: latest_source is the 0.4.0-to-0.4.1 delta patch, progress 55 %, 24 seconds remaining">
+</p>
+<p align="center"><sub>In Zigbee2MQTT: the device page after an update, and the state halfway through installing a 10.8 KB delta patch.</sub></p>
+
 If you try it with ZHA, or anything does not work for you, please open an
 [issue](https://github.com/charliejgallo/DOMCOM-Dimmer/issues).
 
