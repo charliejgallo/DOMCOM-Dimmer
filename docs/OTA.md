@@ -76,8 +76,14 @@ updates* on the dimmer → *Update*. The progress shows in Zigbee2MQTT. At
 the end the device restarts (the light returns to its state with the usual
 fade) and Zigbee2MQTT shows the new version.
 
-The image is ~650 KB, so the download takes several minutes; it depends on
-the route and the traffic on the network.
+The image is ~650 KB and Zigbee2MQTT sends it in 50-byte blocks by
+default, so the download takes about **an hour** (measured on the board,
+one hop from the coordinator). The light works normally meanwhile. Delta
+OTA and larger blocks are on the [roadmap](ROADMAP.md).
+
+In the OTA dialog the index path has to be typed again every time it opens
+(`domcom-dimmer/index.json` in *Custom index*), or pick the official index
+as source: the override index from `configuration.yaml` is added to it.
 
 ## Checked
 
@@ -85,4 +91,8 @@ the route and the traffic on the network.
   2.13): header, manufacturer, image type, version, one element.
 - No image in the public Zigbee2MQTT index uses manufacturer code 0x131B,
   so no other product's image can be offered to the dimmer.
-- On the board: pending (v0.3.0 by cable, then v0.3.1 over the air).
+- On the board (2026-11-18): v0.3.0 flashed by cable, then **0.3.0 → 0.3.1
+  over the air** from Zigbee2MQTT with the local index. With Zigbee2MQTT's
+  default 50-byte blocks the ~670 KB image took about an hour, the light
+  working all along; the device restarted into 0.3.1 and Zigbee2MQTT showed
+  version 769 (0x301) and Firmware ID 0.3.1 without re-pairing.

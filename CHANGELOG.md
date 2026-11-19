@@ -4,7 +4,8 @@
 
 - Each level step from the stack is logged at debug level only (a 5 s
   transition used to print ~50 lines). First version meant to be installed
-  over the air, to try OTA on the board.
+  over the air, to try OTA on the board. Installed over the air from
+  0.3.0 on 2026-11-18: about an hour with 50-byte blocks, no re-pairing.
 
 ## 0.3.0 — 2026-11-18
 

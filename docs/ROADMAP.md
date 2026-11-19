@@ -24,8 +24,8 @@ Done:
   (installed and working).
 - Level transitions: the stack runs them in steps, a 5 s transition fades
   smoothly; nothing to add in the firmware.
-- Zigbee OTA with rollback (v0.3.0); 0.3.0 → 0.3.1 over the air in
-  progress on the board.
+- Zigbee OTA with rollback (v0.3.0): 0.3.0 → 0.3.1 over the air on the
+  board, about an hour with Zigbee2MQTT's 50-byte blocks.
 
 To do:
 
